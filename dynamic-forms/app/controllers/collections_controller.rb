@@ -1,5 +1,5 @@
 class CollectionsController < ApplicationController
-  before_action :set_collection, only: %i[ show edit update destroy ]
+  before_action :set_collection, only: %i[show edit update destroy insert_book add_book]
 
   # GET /collections or /collections.json
   def index
@@ -7,8 +7,7 @@ class CollectionsController < ApplicationController
   end
 
   # GET /collections/1 or /collections/1.json
-  def show
-  end
+  def show; end
 
   # GET /collections/new
   def new
@@ -16,7 +15,16 @@ class CollectionsController < ApplicationController
   end
 
   # GET /collections/1/edit
-  def edit
+  def edit; end
+
+  def add_book; end
+
+  def insert_book
+    params.require([:author_id, :book_id])
+    author = Author.find(params[:author_id])
+    book = author.books.find(params[:book_id])
+    @collection.books << book
+    redirect_to add_book_collection_url(@collection), notice: "#{book.name} by #{author.name} was successfully added."
   end
 
   # POST /collections or /collections.json
@@ -58,13 +66,14 @@ class CollectionsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_collection
-      @collection = Collection.find(params[:id])
-    end
 
-    # Only allow a list of trusted parameters through.
-    def collection_params
-      params.require(:collection).permit(:name)
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_collection
+    @collection = Collection.find(params[:id])
+  end
+
+  # Only allow a list of trusted parameters through.
+  def collection_params
+    params.require(:collection).permit(:name)
+  end
 end

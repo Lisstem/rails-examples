@@ -1,5 +1,11 @@
 Rails.application.routes.draw do
-  resources :collections
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
+  resources :collections do
+    member do
+      get :add_book
+      post :insert_book
+    end
+  end
+
   root 'collections#index'
 end

@@ -4,6 +4,16 @@
   <strong>Name:</strong>
   <%= @collection.name %>
 </p>
+<p>
+  <strong>Books:</strong>
+  <ul>
+    <% @collection.books.preload(:author).each do |book| %>
+      <li> <%= book.name %> by <%= book.author.name %> </li>
+    <% end %>
+  </ul>
+</p>
+
 
 <%= link_to 'Edit', edit_collection_path(@collection) %> |
+<%= link_to 'Add book', add_book_collection_path(@collection) %> |
 <%= link_to 'Back', collections_path %>

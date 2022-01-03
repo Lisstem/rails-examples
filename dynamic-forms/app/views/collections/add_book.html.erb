@@ -1,0 +1,18 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Adding Book to Collection</h1>
+
+<%= form_with url: insert_book_collection_url(@collection) do |form| %>
+  <% authors = Author.order(:name) %>
+  <div class="field">
+    <%= form.label :author_id, 'Author: ' %>
+    <%= form.collection_select :author_id, authors, :id, :name %>
+  </div>
+  <div class="field">
+    <%= form.label :book_id, 'Book: ' %>
+    <%= form.collection_select :book_id, authors.first.books, :id, :name, {} %>
+  </div>
+  <div class="actions">
+    <%= form.submit 'Add Book' %>
+  </div>
+<% end %>
