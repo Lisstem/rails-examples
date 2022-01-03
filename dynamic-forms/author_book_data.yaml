@@ -1,0 +1,40 @@
+- name: Douglas Adams
+  books:
+    - The Hitch Hiker's Guide to the Galaxy
+    - The Restaurant at the End of the Universe
+    - So long, and thanks for all the fish
+    - Life, the Universe and Everything
+- name: Bernhard Hennen
+  books:
+    - Die Elfen
+    - Elfenwinter
+    - Elfenlicht
+    - Elfenritter – Die Ordensburg
+    - Elfenritter – Die Albenmark
+    - Elfenritter – Das Fjordland
+    - Elfenlied
+    - Elfenkönigin
+    - Elfenmacht
+- name: James Sullivan
+  books:
+    - Die Elfen
+    - 'Nuramon: Ein Elfen-Roman'
+- name: Trudi Canavan
+  books:
+    - The Magicians' Guild
+    - The Novice
+    - The High Lord
+    - Thief's Magic
+    - Angel of Storms
+    - Successor's Promise
+    - Maker's Curse
+- name: Jonathan Stroud
+  books:
+    - The Amulet of Samarkand
+    - The Golem's Eye
+    - Ptolemy's Gate
+- name: Walter Moers
+  books:
+    - Die 13½ Leben des Käpt’n Blaubär
+    - Rumo & Die Wunder im Dunkeln
+    - Die Stadt der Träumenden Bücher

@@ -20,14 +20,14 @@ To start we set up a simple one to many relationship and one many to many relati
 * Each collection can have any number of books and each book can belong to any number of collections
 
 The following commands generate the models, relationships and the controller.
-```
+```shell
 bin/rails generate model author name:uniq
 bin/rails generate model book name:index author:references
 bin/rails generate scaffold collection name:index
 bin/rails generate migration CreateJoinTableCollectionsBooks collections books
 ```
 Afterwards update the database
-```
+```shell
 bin/rails db:migrate
 ```
 
@@ -35,3 +35,11 @@ Next we add the relationships to the models:
 * `has_many :books` in [app/models/author.rb](app/models/author.rb)
 * `has_and_belongs_to_many :collections` in [app/models/book.rb](app/models/book.rb)
 * `has_and_belongs_to_many :books` in [app/models/collection.rb](app/models/collection.rb)
+
+To add some data for authors and their books run
+```shell
+bin/rails db:seed
+```
+The data is provided by [author_book_data.yaml](author_book_data.yaml).
+You can add your favourite books if you want :)
+
