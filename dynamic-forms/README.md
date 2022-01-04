@@ -70,3 +70,80 @@ When the author dropdown is changed we will send an ajax request for the author 
 To provide this data we add a [controller for the authors](app/controllers/authors_controller.rb) which only has the show action and a [route](config/routes.rb) for this action. 
 We also need a [json view](app/views/authors/show.json.jbuilder) for the show action (, I also added one for the [html view](app/views/authors/show.html.erb)).
 
+Finally we can write our Javascript.
+As this specific piece of code is only used by one page we add a [pack (app/javascript/packs/add_book.js)](app/javascript/packs/add_book.js) and include this in our [view](app/views/collections/add_book.html.erb).
+```erb
+<%= javascript_pack_tag 'add_book' %>
+```
+
+In [add_book.js](app/javascript/packs/add_book.js) we need to import unobtrusive javascript from rails to execute our ajax requests. 
+```javascript
+import Rails from "@rails/ujs"
+```
+Next we add an listener to the author dropdown.
+```javascript
+document.addEventListener("DOMContentLoaded", function() {
+    document.querySelector('#author_id').addEventListener('change', function(event) {
+        // ajax request goes here
+    });
+});
+```
+For the ajax request we first the url to the author after the change. 
+Conveniently the id of the author is the current value of the dropdown which itself is the target of the event. 
+```javascript
+Rails.ajax({
+    url: `/authors/${event.target.value}.json`,
+    type: "get",
+    success: // handle a succesful request
+});
+```
+Now we need to add a function to handle a successful request (you can also handle an error by passing a function for `error:`).
+This function will need to find our book dropdown.
+Remove it's current options and add all the new options.
+```javascript
+function(data) {
+    // get the book drop down
+    let bookDropdown = document.querySelector('#book_id');
+    // select all option elements in the dropdown and remove them
+    bookDropdown.querySelectorAll('option').forEach( o => o.remove());
+    // for each book the author has written...
+    data.books.forEach(function(book) {
+        // create an new option element, ...
+        let option = document.createElement('option');
+        // set it's value and text ...
+        option.value = book.id;
+        option.innerText = book.name;
+        // and add it to the dropDown
+        bookDropdown.appendChild(option);
+    });
+}
+```
+Putting it all together we have
+```javascript
+import Rails from "@rails/ujs"
+
+document.addEventListener("DOMContentLoaded", function() {
+    document.querySelector('#author_id').addEventListener('change', function(event) {
+        Rails.ajax({
+            url: `/authors/${event.target.value}.json`,
+            type: "get",
+            success: function(data) {
+                // get the book drop down
+                let bookDropdown = document.querySelector('#book_id');
+                // select all option elements in the dropdown and remove them
+                bookDropdown.querySelectorAll('option').forEach( o => o.remove());
+                // for each book the author has written...
+                data.books.forEach(function(book) {
+                    // create an new option element, ...
+                    let option = document.createElement('option');
+                    // set it's value and text ...
+                    option.value = book.id;
+                    option.innerText = book.name;
+                    // and add it to the dropDown
+                    bookDropdown.appendChild(option);
+                });
+            }
+        });
+    });
+});
+```
