@@ -147,3 +147,8 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 ```
+
+And everything works now, but we should add some security to our url regeneration.
+We probably should check if the current value of the author dropdown actually is an id as some might tinker with it.
+To do this we only send a request if the value only consists of digits and otherwise display an error prompt.
+See [add_book.js](app/javascript/packs/add_book.js) for this addition.
