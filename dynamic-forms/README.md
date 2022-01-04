@@ -2,8 +2,8 @@
 This is an example app for dynamic forms.
 Including the following features:
 * Loading dropdown items
-* Search completion for text inputs
-* Adding additional fields
+* Search completion for text inputs (not finished)
+* Adding additional fields (not finished)
 
 This README is a guide on how i got to my solution.
 The latest commit is the solution itself.
@@ -48,11 +48,11 @@ We will create a page for this purpose.
 On this page we will have a dropdown for the authors and one for their books.
 The goal of this section is to update the dropdown for the books whenever another author is selected.
 
-First we add two methods to the [collections controller](app/controllers/collections_controller.rb) `add_book` and `insert_book`.
+First we add two actions to the [collections controller](app/controllers/collections_controller.rb) `add_book` and `insert_book`.
 `add_book` will display the page to add the book to the collection and `insert_book` handles the post request from the former page.
 To get the page to render we need to update the [routes](config/routes.rb) as well as to create the actual [view](app/views/collections/add_book.html.erb).
 In the view we create a form which posts to the `insert_book_url` for our collection and which contains the dropdowns (collection_selects) for the authors and their books.
-```erbruby
+```erb
 <%= form_with url: insert_book_collection_url(@collection) do |form| %>
   <% authors = Author.order(:name) %>
   # ...
@@ -64,3 +64,9 @@ In the view we create a form which posts to the `insert_book_url` for our collec
 ```
 Notice that the contents of the second dropdown are set to the books of the first author. 
 The first author is selected by default and this way the correct books are displayed.
+
+To change the items in the book dropdown we can use Javascript. 
+When the author dropdown is changed we will send an ajax request for the author data.
+To provide this data we add a [controller for the authors](app/controllers/authors_controller.rb) which only has the show action and a [route](config/routes.rb) for this action. 
+We also need a [json view](app/views/authors/show.json.jbuilder) for the show action (, I also added one for the [html view](app/views/authors/show.html.erb)).
+

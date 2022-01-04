@@ -1,0 +1,14 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Name:</strong>
+  <%= @author.name %>
+</p>
+<p>
+  <strong>Books:</strong>
+  <ul>
+    <% @author.books.each do |book| %>
+      <li> <%= book.name %> </li>
+    <% end %>
+  </ul>
+</p>
