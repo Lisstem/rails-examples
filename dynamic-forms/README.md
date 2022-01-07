@@ -157,7 +157,7 @@ See [add_book.js](app/javascript/packs/add_book.js) for this addition.
 In this section we add a search function for authors with autocompletion.
 
 First we need to add we need to add an [action](app/controllers/authors_controller.rb), views and a [route](config/routes.rb) for this.
-For the search action we make use of scopes for models (see [author.rb](app/models/author.rb)) as a small feature we redirect directly to the author if only one matches the search term.
+For the search action we make use of scopes for models (see [author.rb](app/models/author.rb)) abd as a small feature we redirect directly to the author if only one matches the search term.
 Both the [html view](app/views/authors/search.html.erb) and the [json view](app/views/authors/search.json.jbuilder) simply display the matching authors.
 
 Next up we need a way to actually navigate to our search page.
@@ -196,5 +196,4 @@ Let's break this down:
   ```html
     <datalist id="search_autocomplete"></datalist>
   ```
-* Lastly `data-search` will be used to enhance the performance of for our autocomplete.
 

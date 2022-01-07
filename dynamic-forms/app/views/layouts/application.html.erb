@@ -17,7 +17,7 @@
       <%= form_with url: search_authors_url, method: :get do |f| %>
         <%= f.label :author_name, 'Search author: ' %>
         <%= search_field(:author, :name, name: :q, value: params[:q], minlength: 3, placeholder: 'author name',
-                         autosave: false, autocomplete: :off, list: :search_autocomplete, 'data-search': '') %>
+                         autosave: false, autocomplete: :off, list: :search_autocomplete) %>
         <datalist id="search_autocomplete"></datalist>
         <%= f.submit 'Search' %>
       <% end %>
