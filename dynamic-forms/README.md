@@ -2,7 +2,7 @@
 This is an example app for dynamic forms.
 Including the following features:
 * Loading dropdown items
-* Autocomplete for text inputs (not finished)
+* Autocomplete for text inputs
 * Adding additional fields (not finished)
 
 This README is a guide on how i got to my solution.
