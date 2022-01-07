@@ -155,6 +155,46 @@ See [add_book.js](app/javascript/packs/add_book.js) for this addition.
 
 ## Autocomplete for text inputs
 In this section we add a search function for authors with autocompletion.
+
 First we need to add we need to add an [action](app/controllers/authors_controller.rb), views and a [route](config/routes.rb) for this.
 For the search action we make use of scopes for models (see [author.rb](app/models/author.rb)) as a small feature we redirect directly to the author if only one matches the search term.
 Both the [html view](app/views/authors/search.html.erb) and the [json view](app/views/authors/search.json.jbuilder) simply display the matching authors.
+
+Next up we need a way to actually navigate to our search page.
+For this purpose we add a small header containing a search form to our site. 
+To archive this we add the code directly to the [application layout](app/views/layouts/application.html.erb).
+```erb
+<header>
+    <nav>
+      <%= link_to 'Dynamic Forms Example', root_path %>
+      <%= form_with url: search_authors_url, method: :get do |f| %>
+        <%= f.label :author_name, 'Search author: ' %>
+        <%= search_field(:author, :name, name: :q, value: params[:q], minlength: 3, placeholder: 'author name',
+                         autosave: false, autocomplete: :off, list: :search_autocomplete, 'data-search': '') %>
+        <datalist id="search_autocomplete"></datalist>
+        <%= f.submit 'Search' %>
+      <% end %>
+    </nav>
+</header>
+```
+The most important part is the search field
+```ruby
+search_field(:author, :name, name: :q, value: params[:q], minlength: 3, placeholder: 'author name',
+             autosave: false, autocomplete: :off, list: :search_autocomplete, 'data-search': '')
+```
+Let's break this down:
+* The `:author` and `:name` sets the id of tag to `author_name` and the name property to `author[name]` and are required.
+* As we want to use `q` as (a shorter) parameter for the search term we need to override the name attribute .
+* If we already are on the search page the parameter `q` is set and we can insert it's value directly into the field for convenience.
+* The `min length` is set to 3 as we want to reduce load on the the server and only search for name with more than 2 characters.
+* The `placeholder` is displayed when the search field is empty.
+* `autosave false` disables saving the terms in the browsers cache.
+* `autocomplete off` disables the build-in autocomplete of the browser which gets in the way of our own autocomplete otherwise.
+* `list` provides an id to a datalist with options for the browser to suggest.
+  We will use this for our autocomplete.
+  Our list is empty right know but we will fill it via javascript later.
+  ```html
+    <datalist id="search_autocomplete"></datalist>
+  ```
+* Lastly `data-search` will be used to enhance the performance of for our autocomplete.
+
