@@ -6,7 +6,9 @@ Rails.application.routes.draw do
       post :insert_book
     end
   end
-  resources :authors, only: :show
+  resources :authors, only: :show do
+    get :search, on: :collection
+  end
 
   root 'collections#index'
 end

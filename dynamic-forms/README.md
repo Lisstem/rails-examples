@@ -2,7 +2,7 @@
 This is an example app for dynamic forms.
 Including the following features:
 * Loading dropdown items
-* Search completion for text inputs (not finished)
+* Autocomplete for text inputs (not finished)
 * Adding additional fields (not finished)
 
 This README is a guide on how i got to my solution.
@@ -152,3 +152,9 @@ And everything works now, but we should add some security to our url regeneratio
 We probably should check if the current value of the author dropdown actually is an id as some might tinker with it.
 To do this we only send a request if the value only consists of digits and otherwise display an error prompt.
 See [add_book.js](app/javascript/packs/add_book.js) for this addition.
+
+## Autocomplete for text inputs
+In this section we add a search function for authors with autocompletion.
+First we need to add we need to add an [action](app/controllers/authors_controller.rb), views and a [route](config/routes.rb) for this.
+For the search action we make use of scopes for models (see [author.rb](app/models/author.rb)) as a small feature we redirect directly to the author if only one matches the search term.
+Both the [html view](app/views/authors/search.html.erb) and the [json view](app/views/authors/search.json.jbuilder) simply display the matching authors.
