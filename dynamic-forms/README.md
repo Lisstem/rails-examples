@@ -197,3 +197,111 @@ Let's break this down:
     <datalist id="search_autocomplete"></datalist>
   ```
 
+Finally we get to the javascript.
+We create a new [pack](app/javascript/packs/search_autocomplete.js) for this purpose.
+And as search function is used on the whole site we can directly import it in the [application.js](app/javascript/packs/application.js).
+As we want to send an Ajax request if the search input is changed we again need to import Rails and some event listener.
+The only difference to the previous section is that the event listener on the search field listens on the input event instead of the change event.
+The input event is triggered whenever the value changes but the change event only occurs when the search field looses focus.
+```javascript
+import Rails from "@rails/ujs"
+
+document.addEventListener("DOMContentLoaded", function() {
+    document.querySelector('#author_name').addEventListener('input', function(event) {
+        // Ajax Request goes here
+    });
+});
+```
+
+Surprisingly (at least for me) the success function for the autocomplete and the dropdown items are mostly the same.
+```javascript
+let autocompleteList = document.querySelector("#search_autocomplete");
+let searchTerm = event.target.value;
+if (searchTerm.length >= 3) {
+    Rails.ajax({
+        url: `/authors/search.json?q=${searchTerm}`,
+        type: "get",
+        success: function (data) {
+            // if the search results are already outdated when they arrive
+            if (event.target.value !== searchTerm) {
+                return;
+            }
+            // remove all current options
+            autocompleteList.querySelectorAll('option').forEach(o => o.remove());
+            // add new options
+            data.results.forEach(function (author) {
+                let option = document.createElement('option');
+                option.value = author.name;
+                autocompleteList.appendChild(option);
+            });
+        }
+    });
+}
+```
+We request the data, remove all the current options and then add the new options.
+The only differences are that we only send a request if the search term is at least 3 characters and after receiving the data we check whether it's already outdated (due to the delay).
+(There still is the concurrency problem of potentially modifying the options through 2 requests, but i hope it will be fine)
+
+Hurray, autocomplete is working now \o/
+... but it generates lots of request as every character change issues a new on. 
+Luckily there are a few ways to improve performance.
+
+First of we do not need to issue a new request if all the current options still match the new search term.  
+Also if we add another character to our search term all of the hits still match the old search term and should be part of the current options.
+The only problem here is that the options are limited to 100.
+So if we already have 100 options might miss some options and we need to query them again.
+
+As a last improvement we can insert a small delay between the start of the event and executing the Ajax request.
+If the search term has changed during the delay we do not need to send the request.
+I personally feel that even a delay of half a second still feels fine and it really cuts down on the requests.
+Especially when the user is using backspace.
+
+Putting all together yield
+```javascript
+import Rails from "@rails/ujs"
+
+function updateRequired(newTerm, oldTerm, oldOptions) {
+    if (newTerm.length < 3) {
+        return false;
+    }
+    if (oldTerm === '' || !newTerm.match(oldTerm)) {
+        return true;
+    }
+    let entries = oldOptions.length;
+    let rehit = 0; oldOptions.forEach(o => o.value.match(newTerm) ? rehit++: 0);
+    return entries === 100 && rehit < entries;
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    let autocompleteList = document.querySelector("#search_autocomplete");
+    let oldTerm = ""
+    document.querySelector('#author_name').addEventListener('input', function(event) {
+        let searchTerm = event.target.value;
+        // add small delay
+        setTimeout(() => {
+            // check if term is still update to date and if an update is required
+            if (event.target.value === searchTerm && updateRequired(searchTerm, oldTerm, autocompleteList.querySelectorAll('option'))) {
+                Rails.ajax({
+                    url: `/authors/search.json?q=${searchTerm}`,
+                    type: "get",
+                    success: function (data) {
+                        // if the search results are already outdated when they arrive
+                        if (event.target.value !== searchTerm) {
+                            return;
+                        }
+                        // set search term als old term
+                        oldTerm = searchTerm;
+                        // remove all current options
+                        autocompleteList.querySelectorAll('option').forEach(o => o.remove());
+                        // add new options
+                        data.results.forEach(function (author) {
+                            let option = document.createElement('option');
+                            option.value = author.name;
+                            autocompleteList.appendChild(option);
+                        });
+                    }
+                });
+            }}, 500);
+    });
+});
+```
